@@ -1,7 +1,7 @@
 package com.example.imitateinterface.controller;
 
-import com.example.imitateinterface.entity.User;
-import com.example.imitateinterface.utils.SignUtils;
+import com.example.openapiclientsdk.entity.User;
+import com.example.openapiclientsdk.utils.SignUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
