@@ -8,7 +8,6 @@ import com.yupi.project.common.DeleteRequest;
 import com.yupi.project.common.ErrorCode;
 import com.yupi.project.common.ResultUtils;
 import com.yupi.project.exception.BusinessException;
-import com.yupi.project.model.dto.*;
 import com.yupi.project.model.dto.user.*;
 import com.yupi.project.model.entity.User;
 import com.yupi.project.model.vo.UserVO;
@@ -34,7 +33,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    // region 登录相关
+    // region 注册相关
 
     /**
      * 用户注册
@@ -107,8 +106,6 @@ public class UserController {
         return ResultUtils.success(userVO);
     }
 
-    // endregion
-
     // region 增删改查
 
     /**
@@ -133,7 +130,7 @@ public class UserController {
     }
 
     /**
-     * 删除用户
+     * 删除用户 逻辑删除
      *
      * @param deleteRequest
      * @param request
@@ -156,7 +153,8 @@ public class UserController {
      * @return
      */
     @PostMapping("/update")
-    public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
+    public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
+                                            HttpServletRequest request) {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

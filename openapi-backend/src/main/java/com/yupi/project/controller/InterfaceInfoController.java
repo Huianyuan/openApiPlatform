@@ -2,11 +2,9 @@ package com.yupi.project.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.openapiclientsdk.client.Zclient;
 import com.yupi.project.annotation.AuthCheck;
-import com.yupi.project.common.BaseResponse;
-import com.yupi.project.common.DeleteRequest;
-import com.yupi.project.common.ErrorCode;
-import com.yupi.project.common.ResultUtils;
+import com.yupi.project.common.*;
 import com.yupi.project.constant.CommonConstant;
 import com.yupi.project.exception.BusinessException;
 import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoAddRequest;
@@ -14,8 +12,10 @@ import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.yupi.project.model.entity.InterfaceInfo;
 import com.yupi.project.model.entity.User;
+import com.yupi.project.model.enums.InterfaceInfoStatusEnum;
 import com.yupi.project.service.InterfaceInfoService;
 import com.yupi.project.service.UserService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -41,6 +41,9 @@ public class InterfaceInfoController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private Zclient zclient;
+
     // region 增删改查
 
     /**
@@ -56,7 +59,7 @@ public class InterfaceInfoController {
         }
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
-        // 校验 todo ：未完成，只校验了name
+        // 校验 todo ：未完成，只校验了name，其他属性合法化校验未完成
         interfaceInfoService.validInterfaceInfo(interfaceInfo, true);
         User loginUser = userService.getLoginUser(request);
         interfaceInfo.setUserId(loginUser.getId());
@@ -167,12 +170,13 @@ public class InterfaceInfoController {
      * @return com.yupi.project.common.BaseResponse<java.lang.Boolean>
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest, HttpServletRequest request) {
+    public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest,
+                                                                     HttpServletRequest request) {
         if (interfaceInfoQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
-        BeanUtils.copyProperties(interfaceInfoQueryRequest, interfaceInfoQuery);
+        BeanUtils.copyProperties(interfaceInfoQueryRequest,interfaceInfoQuery);
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
         String sortField = interfaceInfoQueryRequest.getSortField();
@@ -194,4 +198,66 @@ public class InterfaceInfoController {
 
     // endregion
 
+    /**
+     * 发布（上线）
+     * @param idRequest 请求参数
+     * @param request   请求参数
+     * @return com.yupi.project.common.BaseResponse<java.lang.Boolean>
+     */
+    @AuthCheck(mustRole = "admin")
+    @PostMapping("/online")
+    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest ,HttpServletRequest request) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //判断是否存在
+        long id=idRequest.getId();
+        InterfaceInfo oldInterfaceInfo=interfaceInfoService.getById(id);
+        if(oldInterfaceInfo==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        //判断接口是否可以被调用 todo：这里固定调用，后续得改为根据请求链接动态获取接口
+        com.example.openapiclientsdk.entity.User user=new com.example.openapiclientsdk.entity.User();
+        user.setUserName("test");
+        String userName=zclient.getUserNameByPost(user);
+        if(StringUtils.isBlank(userName)){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"接口验证失败");
+        }
+
+        InterfaceInfo interfaceInfo=new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+
+        boolean result=interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+
+    }
+
+
+    /**
+     * 下线
+     * @param idRequest 请求参数
+     * @param request   请求参数
+     * @return com.yupi.project.common.BaseResponse<java.lang.Boolean>
+     */
+    @AuthCheck(mustRole = "admin")
+    @PostMapping("/offline")
+    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest ,HttpServletRequest request) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //判断是否存在
+        long id=idRequest.getId();
+        InterfaceInfo oldInterfaceInfo=interfaceInfoService.getById(id);
+        if(oldInterfaceInfo==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        InterfaceInfo interfaceInfo=new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFINE.getValue());
+
+        boolean result=interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+
+    }
 }
