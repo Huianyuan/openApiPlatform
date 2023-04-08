@@ -19,13 +19,16 @@ export default [
     ],
   },
   {path: '/welcome', name: 'welcome', icon: 'smile', component: './Welcome',},
+  {path: '/hello', name: '主页', icon: 'smile', component: './Index/hello',},
+  {path: '/interface_info/:id', name: '查看接口', icon: 'smile', component: './InterfaceInfo',hideInMenu:true},
+
   {
     path: '/admin',
     name: 'admin',
     icon: 'crown',
     access: 'canAdmin',
     routes: [
-      {name: '接口管理', icon: 'table', path: '/admin/interface_info', component: './InterfaceInfo',},
+      {name: '接口管理', icon: 'table', path: '/admin/interface_info', component: './Admin/InterfaceInfo',},
     ],
   },
 
