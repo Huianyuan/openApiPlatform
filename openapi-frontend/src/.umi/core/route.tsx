@@ -12,7 +12,7 @@ export async function getRoutes() {
 '2': React.lazy(() => import(/* webpackChunkName: "p__User__Login__index" */'@/pages/User/Login/index.tsx')),
 '3': React.lazy(() => import(/* webpackChunkName: "p__Welcome" */'@/pages/Welcome.tsx')),
 '4': React.lazy(() => import( './EmptyRoute')),
-'5': React.lazy(() => import(/* webpackChunkName: "p__InterfaceInfo__index" */'@/pages/InterfaceInfo/index.tsx')),
+'5': React.lazy(() => import(/* webpackChunkName: "p__Admin__InterfaceInfo__index" */'@/pages/Admin/InterfaceInfo/index.tsx')),
 '6': React.lazy(() => import( './EmptyRoute')),
 '7': React.lazy(() => import(/* webpackChunkName: "p__404" */'@/pages/404.tsx')),
 'ant-design-pro-layout': React.lazy(() => import(/* webpackChunkName: "umi__plugin-layout__Layout" */'F:/2Java_work/OpenAPIPlatform/openapi-frontend/src/.umi/plugin-layout/Layout.tsx')),

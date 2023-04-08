@@ -7,7 +7,7 @@ import type { IRuntimeConfig as Plugin2 } from 'F:/2Java_work/OpenAPIPlatform/op
 import type { IRuntimeConfig as Plugin3 } from 'F:/2Java_work/OpenAPIPlatform/openapi-frontend/src/.umi/plugin-locale/runtimeConfig.d'
 import type { IRuntimeConfig as Plugin4 } from 'F:/2Java_work/OpenAPIPlatform/openapi-frontend/src/.umi/plugin-request/runtimeConfig.d'
 interface IDefaultRuntimeConfig {
-  onRouteChange?: (props: { routes: any, clientRoutes: any, location: any, action:any }) => void;
+  onRouteChange?: (props: { routes: any, clientRoutes: any, location: any, action: any, isFirst: boolean }) => void;
   patchRoutes?: (props: { routes: any }) => void;
   patchClientRoutes?: (props: { routes: any }) => void;
   render?: (oldRender: () => void) => void;

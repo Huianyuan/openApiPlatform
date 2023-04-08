@@ -73,5 +73,5 @@ import './plugin-moment2dayjs/runtime.tsx'
 render();
 
 window.g_umi = {
-  version: '4.0.63',
+  version: '4.0.64',
 };
