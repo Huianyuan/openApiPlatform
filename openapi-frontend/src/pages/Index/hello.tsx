@@ -1,6 +1,8 @@
 import { PageContainer } from '@ant-design/pro-components';
 import React, {useEffect, useState} from 'react';
 import {List, message} from "antd";
+
+// @ts-ignore
 import {listInterfaceInfoByPageUsingGET} from "@/services/openapi-backend/interfaceInfoController";
 
 

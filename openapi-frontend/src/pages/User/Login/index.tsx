@@ -104,10 +104,10 @@ const Login: React.FC = () => {
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
-    // @ts-ignore
     const userInfo = await initialState?.fetchUserInfo?.();
     if (userInfo) {
       flushSync(() => {
+        // @ts-ignore
         setInitialState((s) => ({
           ...s,
           currentUser: userInfo,
