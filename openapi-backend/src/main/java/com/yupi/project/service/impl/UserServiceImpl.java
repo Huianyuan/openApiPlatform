@@ -1,5 +1,8 @@
 package com.yupi.project.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.crypto.digest.Digester;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yupi.project.common.ErrorCode;
@@ -14,6 +17,8 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import java.nio.charset.StandardCharsets;
 
 import static com.yupi.project.constant.UserConstant.ADMIN_ROLE;
 import static com.yupi.project.constant.UserConstant.USER_LOGIN_STATE;
@@ -62,10 +67,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-            // 3. 插入数据
+            // 3. 分配accessKey secretKey
+            String accessKey = DigestUtil.md5Hex(SALT+userAccount+ RandomUtil.randomNumbers(5));
+            String secretKey = DigestUtil.md5Hex(SALT+userAccount+RandomUtil.randomNumbers(5));
+            // 4. 插入数据
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
+            user.setAccessKey(accessKey);
+            user.setSecretKey(secretKey);
+            user.setUserAvatar("https://avatars.githubusercontent.com/u/34713275?v=4");//用户默认头像，防止前端请求不到而一直加载
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");

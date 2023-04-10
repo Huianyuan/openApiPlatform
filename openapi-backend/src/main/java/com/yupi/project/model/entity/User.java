@@ -49,6 +49,14 @@ public class User implements Serializable {
      * 密码
      */
     private String userPassword;
+    /**
+     * 签名
+     */
+    private String accessKey;
+    /**
+     * 秘钥
+     */
+    private String secretKey;
 
     /**
      * 创建时间

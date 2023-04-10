@@ -9,20 +9,21 @@
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
             <result property="url" column="url" jdbcType="VARCHAR"/>
-            <result property="request_header" column="request_header" jdbcType="VARCHAR"/>
-            <result property="response_header" column="response_header" jdbcType="VARCHAR"/>
+            <result property="requestHeader" column="requestHeader" jdbcType="VARCHAR"/>
+            <result property="responseHeader" column="responseHeader" jdbcType="VARCHAR"/>
+            <result property="requestParams" column="requestParams" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="method" column="method" jdbcType="VARCHAR"/>
-            <result property="user_id" column="user_id" jdbcType="BIGINT"/>
-            <result property="create_time" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="update_time" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="is_deleted" column="is_deleted" jdbcType="TINYINT"/>
+            <result property="userId" column="userId" jdbcType="BIGINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDeleted" column="isDeleted" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,name,description,
-        url,request_header,response_header,
-        status,method,user_id,
-        create_time,update_time,is_deleted
+        url,requestHeader,responseHeader,requestParams,
+        status,method,userId,
+        createTime,updateTime,isDeleted
     </sql>
 </mapper>
