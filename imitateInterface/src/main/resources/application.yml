@@ -2,3 +2,10 @@ server:
   port: 8123
   servlet:
     context-path: /api
+
+
+
+openapi:
+  clent:
+    access-key: ceshi
+    secret-key: abcdef

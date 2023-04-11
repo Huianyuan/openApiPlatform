@@ -1,7 +1,7 @@
 package com.example.imitateinterface.controller;
 
-import com.example.imitateinterface.entity.User;
-import com.example.imitateinterface.utils.SignUtils;
+import com.example.openapiclientsdk.entity.User;
+import com.example.openapiclientsdk.utils.SignUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/name")
 public class NameController {
-    @GetMapping("/")
+    @GetMapping("/userget")
     public String getNameByGet(String name) {
         return "Get 你的名字是" + name;
     }
 
-    @PostMapping("/")
+    @PostMapping("/userpost")
     public String getNameByPost(@RequestParam String name) {
         return "Post 你的名字是" + name;
     }
@@ -33,20 +33,20 @@ public class NameController {
         String sign=request.getHeader("sign");
         String body=request.getHeader("body");
         //todo 实际从数据库中获取
-        if (!accessKey.equals("ceshi")) {
-            throw new RuntimeException("无权限");
-        }
+        // if (!accessKey.equals("ceshi")) {
+        //     throw new RuntimeException("无权限");
+        // }
 
-        if(Long.parseLong(nonce)<100){
-            throw new RuntimeException("无权限");
-        }
+        // if(Long.parseLong(nonce)<10000){
+        //     throw new RuntimeException("无权限");
+        // }
         //todo 时间校验，当前时间和调用时间不能超过5分钟
         // if(timestamp)
         //todo 从数据库中获取
-        String serverSign = SignUtils.getSign(body, "abcdef");
-        if(!sign.equals(serverSign)){
-            throw new RuntimeException("无权限");
-        }
+        // String serverSign = SignUtils.getSign(body, "abcdef");
+        // if(!sign.equals(serverSign)){
+        //     throw new RuntimeException("无权限");
+        // }
         return "post 用户的名字是" + user.getUserName();
     }
 
