@@ -19,6 +19,20 @@ create table if not exists openapi.`interface_info`
     `is_deleted` tinyint default 0 not null comment '是否删除(0-未删, 1-已删)'
     ) comment '接口信息';
 
+-- 用户调用节后关系表
+create table if not exists openapi.`user_interface_info`
+(
+    `id` bigint not null auto_increment comment '主键' primary key,
+    `userId` bigint not null comment '调用用户Id',
+    `interfaceInfoId` bigint not null comment '接口Id',
+    `totalNum` int default 0 not null comment '总调用次数',
+    `status` int default 0 not null comment '0-正常 ，1-禁用',
+    `createTime` datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    `updateTime` datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    `isDelete` tinyint default 0 not null comment '是否删除(0-未删, 1-已删)'
+) comment '用户调用接口关系表';
+
+
 insert into openapi.`interface_info` (`name`, `description`, `url`, `request_header`, `response_header`, `status`, `method`, `user_id`) values ('廖立轩', '脱颖而出', 'www.foster-larkin.co', '龙嘉懿', '秦天磊', 0, 'GET', 1718083101);
 insert into openapi.`interface_info` (`name`, `description`, `url`, `request_header`, `response_header`, `status`, `method`, `user_id`) values ('曹明辉', '举一反三', 'www.tony-kiehn.com', '任擎苍', '陈凯瑞', 0, 'GET', 28978);
 insert into openapi.`interface_info` (`name`, `description`, `url`, `request_header`, `response_header`, `status`, `method`, `user_id`) values ('金乐驹', '首当其冲', 'www.coleen-prosacco.net', '毛浩', '陆致远', 0, 'GET', 208);

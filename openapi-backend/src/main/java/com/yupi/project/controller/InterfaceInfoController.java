@@ -3,11 +3,13 @@ package com.yupi.project.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.openapiclientsdk.client.Zclient;
+import com.google.gson.Gson;
 import com.yupi.project.annotation.AuthCheck;
 import com.yupi.project.common.*;
 import com.yupi.project.constant.CommonConstant;
 import com.yupi.project.exception.BusinessException;
 import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoAddRequest;
+import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.yupi.project.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.yupi.project.model.entity.InterfaceInfo;
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.service.CredentialsGrant;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +46,6 @@ public class InterfaceInfoController {
 
     @Resource
     private Zclient zclient;
-
-    // region 增删改查
 
     /**
      * 创建
@@ -196,7 +197,6 @@ public class InterfaceInfoController {
         return ResultUtils.success(interfaceInfoPage);
     }
 
-    // endregion
 
     /**
      * 发布（上线）
@@ -260,4 +260,43 @@ public class InterfaceInfoController {
         return ResultUtils.success(result);
 
     }
+
+    /**
+     * 在线调用
+     * @param interfaceInfoInvokeRequest 用户请求参数
+     * @param request   请求参数
+     * @return com.yupi.project.common.BaseResponse<java.lang.Boolean>
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest , HttpServletRequest request) {
+        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //判断是否存在
+        long id=interfaceInfoInvokeRequest.getId();
+        String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
+
+        InterfaceInfo oldInterfaceInfo=interfaceInfoService.getById(id);
+        if(oldInterfaceInfo==null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if(oldInterfaceInfo.getStatus()==InterfaceInfoStatusEnum.OFFINE.getValue()){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口已关闭");
+        }
+        User loginUser=userService.getLoginUser(request);
+
+        String accessKey=loginUser.getAccessKey();
+        String secretKey=loginUser.getSecretKey();
+
+        Zclient tempClient=new Zclient(accessKey,secretKey);
+
+        Gson gson=new Gson();
+        com.example.openapiclientsdk.entity.User user=gson.fromJson(userRequestParams, com.example.openapiclientsdk.entity.User.class);
+        String userNameByPost=tempClient.getUserNameByPost(user);
+
+        return ResultUtils.success(userNameByPost);
+
+    }
+
+
 }
