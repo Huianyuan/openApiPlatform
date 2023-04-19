@@ -114,7 +114,7 @@ public class InterfaceInfoController {
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         BeanUtils.copyProperties(interfaceInfoUpdateRequest, interfaceInfo);
         // 参数校验
-        interfaceInfoService.validInterfaceInfo(interfaceInfo, false);
+        interfaceInfoService.validInterfaceInfo(interfaceInfo, true);
         User user = userService.getLoginUser(request);
         long id = interfaceInfoUpdateRequest.getId();
         // 判断是否存在
@@ -196,107 +196,4 @@ public class InterfaceInfoController {
         Page<InterfaceInfo> interfaceInfoPage = interfaceInfoService.page(new Page<>(current, size), queryWrapper);
         return ResultUtils.success(interfaceInfoPage);
     }
-
-
-    /**
-     * 发布（上线）
-     * @param idRequest 请求参数
-     * @param request   请求参数
-     * @return com.yupi.project.common.BaseResponse<java.lang.Boolean>
-     */
-    @AuthCheck(mustRole = "admin")
-    @PostMapping("/online")
-    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest ,HttpServletRequest request) {
-        if (idRequest == null || idRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        //判断是否存在
-        long id=idRequest.getId();
-        InterfaceInfo oldInterfaceInfo=interfaceInfoService.getById(id);
-        if(oldInterfaceInfo==null){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        //判断接口是否可以被调用 todo：这里固定调用，后续得改为根据请求链接动态获取接口
-        com.example.openapiclientsdk.entity.User user=new com.example.openapiclientsdk.entity.User();
-        user.setUserName("test");
-        String userName=zclient.getUserNameByPost(user);
-        if(StringUtils.isBlank(userName)){
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"接口验证失败");
-        }
-
-        InterfaceInfo interfaceInfo=new InterfaceInfo();
-        interfaceInfo.setId(id);
-        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
-
-        boolean result=interfaceInfoService.updateById(interfaceInfo);
-        return ResultUtils.success(result);
-
-    }
-
-
-    /**
-     * 下线
-     * @param idRequest 请求参数
-     * @param request   请求参数
-     * @return com.yupi.project.common.BaseResponse<java.lang.Boolean>
-     */
-    @AuthCheck(mustRole = "admin")
-    @PostMapping("/offline")
-    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest ,HttpServletRequest request) {
-        if (idRequest == null || idRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        //判断是否存在
-        long id=idRequest.getId();
-        InterfaceInfo oldInterfaceInfo=interfaceInfoService.getById(id);
-        if(oldInterfaceInfo==null){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        InterfaceInfo interfaceInfo=new InterfaceInfo();
-        interfaceInfo.setId(id);
-        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFINE.getValue());
-
-        boolean result=interfaceInfoService.updateById(interfaceInfo);
-        return ResultUtils.success(result);
-
-    }
-
-    /**
-     * 在线调用
-     * @param interfaceInfoInvokeRequest 用户请求参数
-     * @param request   请求参数
-     * @return com.yupi.project.common.BaseResponse<java.lang.Boolean>
-     */
-    @PostMapping("/invoke")
-    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest , HttpServletRequest request) {
-        if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        //判断是否存在
-        long id=interfaceInfoInvokeRequest.getId();
-        String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
-
-        InterfaceInfo oldInterfaceInfo=interfaceInfoService.getById(id);
-        if(oldInterfaceInfo==null){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
-        if(oldInterfaceInfo.getStatus()==InterfaceInfoStatusEnum.OFFINE.getValue()){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"接口已关闭");
-        }
-        User loginUser=userService.getLoginUser(request);
-
-        String accessKey=loginUser.getAccessKey();
-        String secretKey=loginUser.getSecretKey();
-
-        Zclient tempClient=new Zclient(accessKey,secretKey);
-
-        Gson gson=new Gson();
-        com.example.openapiclientsdk.entity.User user=gson.fromJson(userRequestParams, com.example.openapiclientsdk.entity.User.class);
-        String userNameByPost=tempClient.getUserNameByPost(user);
-
-        return ResultUtils.success(userNameByPost);
-
-    }
-
-
 }

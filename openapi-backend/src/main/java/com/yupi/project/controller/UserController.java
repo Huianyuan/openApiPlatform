@@ -33,7 +33,7 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    // region 注册相关
+
 
     /**
      * 用户注册
@@ -106,7 +106,6 @@ public class UserController {
         return ResultUtils.success(userVO);
     }
 
-    // region 增删改查
 
     /**
      * 创建用户
@@ -234,5 +233,4 @@ public class UserController {
         return ResultUtils.success(userVOPage);
     }
 
-    // endregion
 }
